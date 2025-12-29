@@ -1,30 +1,27 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const TopTravelPicks = () => {
   const scrollContainerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const currentIndexRef = useRef(0);
-  const scrollIntervalRef = useRef(null);
-  const startTimeoutRef = useRef(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
   const destinations = [
     {
       id: 1,
       name: 'LONDON',
       image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
-      badgeColor: '#9ca3af'
+      badgeColor: '#6b7280'
     },
     {
       id: 2,
       name: 'DUBAI',
       image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
-      badgeColor: '#60a5fa'
+      badgeColor: '#3b82f6'
     },
     {
       id: 3,
-      name: 'CANADA',
-      image: 'https://images.unsplash.com/photo-1519834785169-98be25ec3f84?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
-      badgeColor: '#34d399'
+      name: 'CA',
+      image: 'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+      badgeColor: '#f59e0b'
     },
     {
       id: 4,
@@ -34,74 +31,33 @@ const TopTravelPicks = () => {
     }
   ];
 
-  // Auto-scroll functionality
-  useEffect(() => {
+  // Scroll to card when hovering on partially visible card
+  const handleCardMouseEnter = (index) => {
+    setHoveredCardIndex(index);
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing intervals and timeouts
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const cards = scrollContainer.querySelectorAll('.travel-pick-card');
+    if (!cards[index]) return;
+
+    const card = cards[index];
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Check if card is partially visible (not fully in view)
+    const isPartiallyVisible = cardRect.right > containerRect.right || cardRect.left < containerRect.left;
+
+    if (isPartiallyVisible) {
+      const scrollLeft = card.offsetLeft - 16;
+      scrollContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
     }
-    if (startTimeoutRef.current) {
-      clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = null;
-    }
+  };
 
-    // Wait for DOM to be ready
-    const initTimeout = setTimeout(() => {
-      // Initialize scroll to first card
-      scrollContainer.scrollTo({ left: 0, behavior: 'auto' });
-      currentIndexRef.current = 0;
-
-      const scrollToNext = () => {
-        if (isPaused) return;
-        
-        const nextIndex = (currentIndexRef.current + 1) % destinations.length;
-        currentIndexRef.current = nextIndex;
-        
-        const cards = scrollContainer.querySelectorAll('.travel-pick-card');
-        if (cards[nextIndex]) {
-          const card = cards[nextIndex];
-          const cardLeft = card.offsetLeft;
-          scrollContainer.scrollTo({
-            left: cardLeft,
-            behavior: 'smooth'
-          });
-        }
-      };
-
-      // Auto-scroll interval: 2 seconds
-      const scrollInterval = 2000; // 2000ms = 2 seconds
-      
-      // Start auto-scroll after initial delay
-      startTimeoutRef.current = setTimeout(() => {
-        if (!isPaused) {
-          scrollIntervalRef.current = setInterval(scrollToNext, scrollInterval);
-        }
-      }, scrollInterval);
-    }, 100);
-    
-    return () => {
-      clearTimeout(initTimeout);
-      if (startTimeoutRef.current) {
-        clearTimeout(startTimeoutRef.current);
-        startTimeoutRef.current = null;
-      }
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
-    };
-  }, [isPaused, destinations.length]);
-
-  // Pause on user interaction
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    setTimeout(() => setIsPaused(false), 2000);
+  const handleCardMouseLeave = () => {
+    setHoveredCardIndex(null);
   };
 
   return (
@@ -126,10 +82,10 @@ const TopTravelPicks = () => {
           overflow-y: hidden;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x mandatory;
-          scroll-padding: 0;
+          scroll-padding: 0 1rem;
           width: 100%;
-          gap: 1rem;
+          gap: 0.6rem;
+          padding-bottom: 0.5rem;
         }
         .travel-picks-scroll::-webkit-scrollbar {
           display: none;
@@ -139,28 +95,27 @@ const TopTravelPicks = () => {
           scrollbar-width: none;
         }
         .travel-pick-card {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           flex-shrink: 0;
           background: white;
-          border-radius: 1rem;
+          border-radius: 0.75rem;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           position: relative;
-          width: calc(50% - 0.5rem);
-          min-width: calc(50% - 0.5rem);
-          max-width: calc(50% - 0.5rem);
+          width: 150px;
+          min-width: 150px;
+          max-width: 150px;
           box-sizing: border-box;
           cursor: pointer;
-          transition: transform 0.2s;
+          transition: transform 0.2s, box-shadow 0.2s;
         }
         .travel-pick-card:hover {
-          transform: scale(1.02);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         .travel-pick-image-container {
           position: relative;
           width: 100%;
-          height: 12.5rem;
+          height: 8rem;
           overflow: hidden;
         }
         .travel-pick-image {
@@ -170,14 +125,14 @@ const TopTravelPicks = () => {
         }
         .travel-pick-badge {
           position: absolute;
-          top: 0.75rem;
+          top: 0.5rem;
           left: 50%;
           transform: translateX(-50%);
           background: rgba(156, 163, 175, 0.9);
           color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 1.5rem;
-          font-size: 0.875rem;
+          padding: 0.35rem 0.75rem;
+          border-radius: 1rem;
+          font-size: 0.7rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           text-transform: uppercase;
@@ -197,7 +152,7 @@ const TopTravelPicks = () => {
         }
         @media (max-width: 480px) {
           .top-travel-picks-section {
-            padding: 1.5rem 0 !important;
+            padding: 1rem 0 !important;
             margin-left: -16px !important;
             margin-right: -16px !important;
             width: calc(100% + 32px) !important;
@@ -210,7 +165,6 @@ const TopTravelPicks = () => {
             padding-right: 1rem;
           }
           .travel-picks-scroll {
-            scroll-snap-type: x mandatory;
             width: 100% !important;
             max-width: 100% !important;
             margin-left: 0 !important;
@@ -222,41 +176,45 @@ const TopTravelPicks = () => {
             box-sizing: border-box;
             scroll-padding: 0 16px;
             -webkit-overflow-scrolling: touch;
-            gap: 16px;
+            gap: 8px;
           }
           .travel-pick-card {
-            width: calc(100vw - 32px) !important;
-            min-width: calc(100vw - 32px) !important;
-            max-width: calc(100vw - 32px) !important;
+            width: 140px !important;
+            min-width: 140px !important;
+            max-width: 140px !important;
             margin: 0 !important;
-            border-radius: 1rem !important;
+            border-radius: 0.5rem !important;
             flex-shrink: 0 !important;
             box-sizing: border-box;
-            scroll-snap-align: start;
           }
           .travel-pick-image-container {
-            height: 15rem;
+            height: 7rem !important;
             width: 100% !important;
           }
           .travel-pick-image {
             width: 100% !important;
-            border-radius: 1rem !important;
+            border-radius: 0.5rem !important;
+          }
+          .travel-pick-badge {
+            font-size: 0.6rem !important;
+            padding: 0.25rem 0.5rem !important;
           }
         }
       `}</style>
       <section className="top-travel-picks-section">
         <h2 className="travel-picks-title">Top Travel Picks</h2>
-        
+
         <div
           ref={scrollContainerRef}
           className="travel-picks-scroll"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
-          {destinations.map((destination) => (
-            <div key={destination.id} className="travel-pick-card">
+          {destinations.map((destination, index) => (
+            <div
+              key={destination.id}
+              className="travel-pick-card"
+              onMouseEnter={() => handleCardMouseEnter(index)}
+              onMouseLeave={handleCardMouseLeave}
+            >
               <div className="travel-pick-image-container">
                 <img
                   src={destination.image}

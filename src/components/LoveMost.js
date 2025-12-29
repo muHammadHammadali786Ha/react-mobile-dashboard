@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const LoveMost = () => {
   const scrollContainerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const currentIndexRef = useRef(0);
-  const scrollIntervalRef = useRef(null);
-  const startTimeoutRef = useRef(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
   const activities = [
     {
@@ -62,74 +59,33 @@ const LoveMost = () => {
     }
   ];
 
-  // Auto-scroll functionality
-  useEffect(() => {
+  // Scroll to card when hovering on partially visible card
+  const handleCardMouseEnter = (index) => {
+    setHoveredCardIndex(index);
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing intervals and timeouts
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const cards = scrollContainer.querySelectorAll('.love-most-card');
+    if (!cards[index]) return;
+
+    const card = cards[index];
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Check if card is partially visible (not fully in view)
+    const isPartiallyVisible = cardRect.right > containerRect.right || cardRect.left < containerRect.left;
+
+    if (isPartiallyVisible) {
+      const scrollLeft = card.offsetLeft - 16;
+      scrollContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
     }
-    if (startTimeoutRef.current) {
-      clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = null;
-    }
+  };
 
-    // Wait for DOM to be ready
-    const initTimeout = setTimeout(() => {
-      // Initialize scroll to first card
-      scrollContainer.scrollTo({ left: 0, behavior: 'auto' });
-      currentIndexRef.current = 0;
-
-      const scrollToNext = () => {
-        if (isPaused) return;
-        
-        const nextIndex = (currentIndexRef.current + 1) % activities.length;
-        currentIndexRef.current = nextIndex;
-        
-        const cards = scrollContainer.querySelectorAll('.love-most-card');
-        if (cards[nextIndex]) {
-          const card = cards[nextIndex];
-          const cardLeft = card.offsetLeft;
-          scrollContainer.scrollTo({
-            left: cardLeft,
-            behavior: 'smooth'
-          });
-        }
-      };
-
-      // Auto-scroll interval: 2 seconds
-      const scrollInterval = 2000; // 2000ms = 2 seconds
-      
-      // Start auto-scroll after initial delay
-      startTimeoutRef.current = setTimeout(() => {
-        if (!isPaused) {
-          scrollIntervalRef.current = setInterval(scrollToNext, scrollInterval);
-        }
-      }, scrollInterval);
-    }, 100);
-    
-    return () => {
-      clearTimeout(initTimeout);
-      if (startTimeoutRef.current) {
-        clearTimeout(startTimeoutRef.current);
-        startTimeoutRef.current = null;
-      }
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
-    };
-  }, [isPaused, activities.length]);
-
-  // Pause on user interaction
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    setTimeout(() => setIsPaused(false), 2000);
+  const handleCardMouseLeave = () => {
+    setHoveredCardIndex(null);
   };
 
   return (
@@ -154,9 +110,10 @@ const LoveMost = () => {
           overflow-y: hidden;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x mandatory;
-          scroll-padding: 0;
+          scroll-padding: 0 1rem;
           width: 100%;
+          gap: 0.6rem;
+          padding-bottom: 0.5rem;
         }
         .love-most-scroll::-webkit-scrollbar {
           display: none;
@@ -166,22 +123,26 @@ const LoveMost = () => {
           scrollbar-width: none;
         }
         .love-most-card {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           flex-shrink: 0;
           background: white;
-          border-radius: 1rem;
+          border-radius: 0.75rem;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          margin-right: 1rem;
-          width: calc(100% - 1rem);
-          max-width: 400px;
+          width: 150px;
+          min-width: 150px;
+          max-width: 150px;
           box-sizing: border-box;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .love-most-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         .love-most-image-container {
           position: relative;
           width: 100%;
-          height: 12.5rem;
+          height: 7rem;
           overflow: hidden;
         }
         .love-most-image {
@@ -191,14 +152,14 @@ const LoveMost = () => {
         }
         .love-most-actions {
           position: absolute;
-          top: 0.75rem;
-          right: 0.75rem;
+          top: 0.5rem;
+          right: 0.5rem;
           display: flex;
-          gap: 0.5rem;
+          gap: 0.35rem;
         }
         .love-most-action-icon {
-          width: 2rem;
-          height: 2rem;
+          width: 1.6rem;
+          height: 1.6rem;
           background: rgba(255, 255, 255, 0.9);
           border-radius: 50%;
           display: flex;
@@ -210,94 +171,83 @@ const LoveMost = () => {
         .love-most-action-icon:hover {
           background: white;
         }
-        .love-most-carousel-dots {
-          position: absolute;
-          bottom: 0.75rem;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 0.5rem;
-        }
-        .carousel-dot {
-          width: 0.5rem;
-          height: 0.5rem;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-        .carousel-dot.active {
-          background: white;
+        .love-most-action-icon svg {
+          width: 12px;
+          height: 12px;
         }
         .love-most-content {
-          padding: 1rem;
+          padding: 0.5rem;
+        }
+        .love-most-location-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.35rem;
         }
         .love-most-location {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-size: 0.875rem;
+          gap: 0.25rem;
+          font-size: 0.65rem;
           color: #6b7280;
-          margin-bottom: 0.5rem;
         }
         .love-most-rating {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
-          font-size: 0.875rem;
+          gap: 0.15rem;
+          font-size: 0.65rem;
           color: #1f2937;
           font-weight: 500;
         }
-        .love-most-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 0.75rem;
-        }
         .love-most-card-title {
-          font-size: 1rem;
+          font-size: 0.75rem;
           font-weight: 600;
           color: #1f2937;
-          line-height: 1.4;
-          margin: 0 0 0.75rem 0;
+          line-height: 1.25;
+          margin: 0 0 0.3rem 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         .love-most-details {
           display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 0.75rem;
-          font-size: 0.875rem;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.65rem;
           color: #6b7280;
         }
         .love-most-detail-item {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
+          gap: 0.15rem;
         }
         .love-most-footer {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-top: 0.75rem;
-          padding-top: 0.75rem;
-          border-top: 1px solid #e5e7eb;
+          align-items: flex-start;
+          margin-top: 0.4rem;
+          padding-top: 0.4rem;
+          border-top: 1px solid #f3f4f6;
         }
         .love-most-price {
-          font-size: 1.25rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: #1f2937;
         }
         .love-most-price-type {
-          font-size: 0.75rem;
+          font-size: 0.6rem;
           color: #6b7280;
           font-weight: 400;
         }
         .love-most-provider {
-          font-size: 0.75rem;
+          font-size: 0.6rem;
           color: #6b7280;
+          text-align: right;
         }
         @media (max-width: 480px) {
           .love-most-section {
-            padding: 1.5rem 0 !important;
+            padding: 1rem 0 !important;
             margin-left: -16px !important;
             margin-right: -16px !important;
             width: calc(100% + 32px) !important;
@@ -310,7 +260,6 @@ const LoveMost = () => {
             padding-right: 1rem;
           }
           .love-most-scroll {
-            scroll-snap-type: x mandatory;
             width: 100% !important;
             max-width: 100% !important;
             margin-left: 0 !important;
@@ -322,41 +271,65 @@ const LoveMost = () => {
             box-sizing: border-box;
             scroll-padding: 0 16px;
             -webkit-overflow-scrolling: touch;
-            gap: 16px;
+            gap: 8px;
           }
           .love-most-card {
-            width: calc(100vw - 32px) !important;
-            min-width: calc(100vw - 32px) !important;
-            max-width: calc(100vw - 32px) !important;
+            width: 140px !important;
+            min-width: 140px !important;
+            max-width: 140px !important;
             margin: 0 !important;
-            border-radius: 1rem !important;
+            border-radius: 0.5rem !important;
             flex-shrink: 0 !important;
             box-sizing: border-box;
-            scroll-snap-align: start;
           }
           .love-most-image-container {
-            height: 15rem;
+            height: 6rem !important;
             width: 100% !important;
           }
           .love-most-image {
             width: 100% !important;
-            border-radius: 1rem 1rem 0 0 !important;
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+          }
+          .love-most-content {
+            padding: 0.4rem !important;
+          }
+          .love-most-card-title {
+            font-size: 0.65rem !important;
+          }
+          .love-most-location, .love-most-rating {
+            font-size: 0.55rem !important;
+          }
+          .love-most-details {
+            font-size: 0.55rem !important;
+            gap: 0.3rem !important;
+          }
+          .love-most-price {
+            font-size: 0.75rem !important;
+          }
+          .love-most-action-icon {
+            width: 1.2rem !important;
+            height: 1.2rem !important;
+          }
+          .love-most-action-icon svg {
+            width: 10px !important;
+            height: 10px !important;
           }
         }
       `}</style>
       <section className="love-most-section">
         <h2 className="love-most-title">Things You'll Love Most in Japan</h2>
-        
+
         <div
           ref={scrollContainerRef}
           className="love-most-scroll"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
           {activities.map((activity, index) => (
-            <div key={activity.id} className="love-most-card">
+            <div
+              key={activity.id}
+              className="love-most-card"
+              onMouseEnter={() => handleCardMouseEnter(index)}
+              onMouseLeave={handleCardMouseLeave}
+            >
               <div className="love-most-image-container">
                 <img
                   src={activity.image}
@@ -366,12 +339,12 @@ const LoveMost = () => {
                 />
                 <div className="love-most-actions">
                   <div className="love-most-action-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
                   </div>
                   <div className="love-most-action-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
                       <circle cx="18" cy="5" r="3"/>
                       <circle cx="6" cy="12" r="3"/>
                       <circle cx="18" cy="19" r="3"/>
@@ -380,45 +353,37 @@ const LoveMost = () => {
                     </svg>
                   </div>
                 </div>
-                <div className="love-most-carousel-dots">
-                  <div className="carousel-dot active"></div>
-                  <div className="carousel-dot"></div>
-                  <div className="carousel-dot"></div>
-                  <div className="carousel-dot"></div>
-                </div>
               </div>
-              
+
               <div className="love-most-content">
-                <div className="love-most-header">
-                  <div>
-                    <div className="love-most-location">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                      <span>{activity.location}</span>
-                    </div>
+                <div className="love-most-location-row">
+                  <div className="love-most-location">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>{activity.location}</span>
                   </div>
                   <div className="love-most-rating">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" strokeWidth="2">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" strokeWidth="2">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                     <span>{activity.rating} ({activity.reviews})</span>
                   </div>
                 </div>
-                
+
                 <h3 className="love-most-card-title">{activity.title}</h3>
-                
+
                 <div className="love-most-details">
                   <div className="love-most-detail-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
                       <circle cx="12" cy="12" r="10"/>
                       <polyline points="12 6 12 12 16 14"/>
                     </svg>
                     <span>{activity.duration}</span>
                   </div>
                   <div className="love-most-detail-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                       <circle cx="9" cy="7" r="4"/>
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -427,13 +392,10 @@ const LoveMost = () => {
                     <span>{activity.groupSize}</span>
                   </div>
                 </div>
-                
+
                 <div className="love-most-footer">
-                  <div>
-                    <div className="love-most-price">
-                      ${activity.price}
-                      <span className="love-most-price-type">/{activity.priceType}</span>
-                    </div>
+                  <div className="love-most-price">
+                    ${activity.price}<span className="love-most-price-type">/{activity.priceType}</span>
                   </div>
                   <div className="love-most-provider">
                     {activity.provider}
@@ -449,4 +411,3 @@ const LoveMost = () => {
 };
 
 export default LoveMost;
-

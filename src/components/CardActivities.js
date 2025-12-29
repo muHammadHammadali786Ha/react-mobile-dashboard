@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const CardActivities = () => {
   const scrollContainerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const currentIndexRef = useRef(0);
-  const scrollIntervalRef = useRef(null);
-  const startTimeoutRef = useRef(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
   const activities = [
     {
@@ -70,74 +67,33 @@ const CardActivities = () => {
     }
   ];
 
-  // Auto-scroll functionality
-  useEffect(() => {
+  // Scroll to card when hovering on partially visible card
+  const handleCardMouseEnter = (index) => {
+    setHoveredCardIndex(index);
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing intervals and timeouts
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const cards = scrollContainer.querySelectorAll('.activity-card');
+    if (!cards[index]) return;
+
+    const card = cards[index];
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Check if card is partially visible (not fully in view)
+    const isPartiallyVisible = cardRect.right > containerRect.right || cardRect.left < containerRect.left;
+
+    if (isPartiallyVisible) {
+      const scrollLeft = card.offsetLeft - 16; // Account for padding
+      scrollContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
     }
-    if (startTimeoutRef.current) {
-      clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = null;
-    }
+  };
 
-    // Wait for DOM to be ready
-    const initTimeout = setTimeout(() => {
-      // Initialize scroll to first card
-      scrollContainer.scrollTo({ left: 0, behavior: 'auto' });
-      currentIndexRef.current = 0;
-
-      const scrollToNext = () => {
-        if (isPaused) return;
-        
-        const nextIndex = (currentIndexRef.current + 1) % activities.length;
-        currentIndexRef.current = nextIndex;
-        
-        const cards = scrollContainer.querySelectorAll('.activity-card');
-        if (cards[nextIndex]) {
-          const card = cards[nextIndex];
-          const cardLeft = card.offsetLeft;
-          scrollContainer.scrollTo({
-            left: cardLeft,
-            behavior: 'smooth'
-          });
-        }
-      };
-
-      // Auto-scroll interval: 2 seconds
-      const scrollInterval = 2000; // 2000ms = 2 seconds
-      
-      // Start auto-scroll after initial delay
-      startTimeoutRef.current = setTimeout(() => {
-        if (!isPaused) {
-          scrollIntervalRef.current = setInterval(scrollToNext, scrollInterval);
-        }
-      }, scrollInterval);
-    }, 100);
-    
-    return () => {
-      clearTimeout(initTimeout);
-      if (startTimeoutRef.current) {
-        clearTimeout(startTimeoutRef.current);
-        startTimeoutRef.current = null;
-      }
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
-    };
-  }, [isPaused, activities.length]);
-
-  // Pause on user interaction
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    setTimeout(() => setIsPaused(false), 2000);
+  const handleCardMouseLeave = () => {
+    setHoveredCardIndex(null);
   };
 
   return (
@@ -162,9 +118,10 @@ const CardActivities = () => {
           overflow-y: hidden;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x mandatory;
-          scroll-padding: 0;
+          scroll-padding: 0 1rem;
           width: 100%;
+          gap: 0.6rem;
+          padding-bottom: 0.5rem;
         }
         .activities-scroll::-webkit-scrollbar {
           display: none;
@@ -174,22 +131,26 @@ const CardActivities = () => {
           scrollbar-width: none;
         }
         .activity-card {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           flex-shrink: 0;
           background: white;
-          border-radius: 1rem;
+          border-radius: 0.75rem;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          margin-right: 1rem;
-          width: calc(100% - 1rem);
-          max-width: 400px;
+          width: 150px;
+          min-width: 150px;
+          max-width: 150px;
           box-sizing: border-box;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .activity-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         .activity-image-container {
           position: relative;
           width: 100%;
-          height: 12.5rem;
+          height: 7rem;
           overflow: hidden;
         }
         .activity-image {
@@ -199,25 +160,25 @@ const CardActivities = () => {
         }
         .activity-badge {
           position: absolute;
-          top: 0.75rem;
-          left: 0.75rem;
+          top: 0.5rem;
+          left: 0.5rem;
           background: #ef4444;
           color: white;
-          padding: 0.25rem 0.75rem;
-          border-radius: 1rem;
-          font-size: 0.75rem;
+          padding: 0.2rem 0.5rem;
+          border-radius: 0.75rem;
+          font-size: 0.65rem;
           font-weight: 600;
         }
         .activity-actions {
           position: absolute;
-          top: 0.75rem;
-          right: 0.75rem;
+          top: 0.5rem;
+          right: 0.5rem;
           display: flex;
-          gap: 0.5rem;
+          gap: 0.35rem;
         }
         .action-icon {
-          width: 2rem;
-          height: 2rem;
+          width: 1.6rem;
+          height: 1.6rem;
           background: rgba(255, 255, 255, 0.9);
           border-radius: 50%;
           display: flex;
@@ -229,80 +190,96 @@ const CardActivities = () => {
         .action-icon:hover {
           background: white;
         }
+        .action-icon svg {
+          width: 12px;
+          height: 12px;
+        }
         .activity-content {
-          padding: 1rem;
+          padding: 0.5rem;
+        }
+        .activity-location-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.35rem;
         }
         .activity-location {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-size: 0.875rem;
+          gap: 0.25rem;
+          font-size: 0.65rem;
           color: #6b7280;
-          margin-bottom: 0.5rem;
         }
         .activity-rating {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
-          font-size: 0.875rem;
+          gap: 0.15rem;
+          font-size: 0.65rem;
           color: #1f2937;
           font-weight: 500;
         }
-        .activity-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 0.75rem;
-        }
         .activity-title {
-          font-size: 1rem;
+          font-size: 0.75rem;
           font-weight: 600;
           color: #1f2937;
-          line-height: 1.4;
-          margin: 0;
+          line-height: 1.25;
+          margin: 0 0 0.3rem 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         .activity-details {
           display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 0.75rem;
-          font-size: 0.875rem;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.65rem;
           color: #6b7280;
         }
         .activity-detail-item {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
+          gap: 0.15rem;
         }
         .activity-footer {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-top: 0.75rem;
-          padding-top: 0.75rem;
-          border-top: 1px solid #e5e7eb;
+          align-items: flex-start;
+          margin-top: 0.4rem;
+          padding-top: 0.4rem;
+          border-top: 1px solid #f3f4f6;
+        }
+        .activity-price-section {
+          display: flex;
+          flex-direction: column;
+          gap: 0.1rem;
         }
         .activity-price {
-          font-size: 1.25rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: #1f2937;
         }
         .activity-price-type {
-          font-size: 0.75rem;
+          font-size: 0.6rem;
           color: #6b7280;
           font-weight: 400;
         }
         .free-cancellation {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
-          font-size: 0.75rem;
-          color: #10b981;
+          gap: 0.15rem;
+          font-size: 0.6rem;
+          color: #ef4444;
           font-weight: 500;
+        }
+        .activity-provider {
+          font-size: 0.6rem;
+          color: #6b7280;
+          text-align: right;
         }
         @media (max-width: 480px) {
           .activities-section {
-            padding: 1.5rem 0 !important;
+            padding: 1rem 0 !important;
             margin-left: -16px !important;
             margin-right: -16px !important;
             width: calc(100% + 32px) !important;
@@ -315,7 +292,6 @@ const CardActivities = () => {
             padding-right: 1rem;
           }
           .activities-scroll {
-            scroll-snap-type: x mandatory;
             width: 100% !important;
             max-width: 100% !important;
             margin-left: 0 !important;
@@ -327,41 +303,69 @@ const CardActivities = () => {
             box-sizing: border-box;
             scroll-padding: 0 16px;
             -webkit-overflow-scrolling: touch;
-            gap: 16px;
+            gap: 8px;
           }
           .activity-card {
-            width: calc(100vw - 32px) !important;
-            min-width: calc(100vw - 32px) !important;
-            max-width: calc(100vw - 32px) !important;
+            width: 140px !important;
+            min-width: 140px !important;
+            max-width: 140px !important;
             margin: 0 !important;
-            border-radius: 1rem !important;
+            border-radius: 0.5rem !important;
             flex-shrink: 0 !important;
             box-sizing: border-box;
-            scroll-snap-align: start;
           }
           .activity-image-container {
-            height: 15rem;
+            height: 6rem !important;
             width: 100% !important;
           }
           .activity-image {
             width: 100% !important;
-            border-radius: 1rem 1rem 0 0 !important;
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+          }
+          .activity-content {
+            padding: 0.4rem !important;
+          }
+          .activity-title {
+            font-size: 0.65rem !important;
+          }
+          .activity-location, .activity-rating {
+            font-size: 0.55rem !important;
+          }
+          .activity-details {
+            font-size: 0.55rem !important;
+            gap: 0.3rem !important;
+          }
+          .activity-price {
+            font-size: 0.75rem !important;
+          }
+          .activity-badge {
+            font-size: 0.5rem !important;
+            padding: 0.15rem 0.35rem !important;
+          }
+          .action-icon {
+            width: 1.2rem !important;
+            height: 1.2rem !important;
+          }
+          .action-icon svg {
+            width: 10px !important;
+            height: 10px !important;
           }
         }
       `}</style>
       <section className="activities-section">
         <h2 className="activities-title">Activities related to you</h2>
-        
+
         <div
           ref={scrollContainerRef}
           className="activities-scroll"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
-          {activities.map((activity) => (
-            <div key={activity.id} className="activity-card">
+          {activities.map((activity, index) => (
+            <div
+              key={activity.id}
+              className="activity-card"
+              onMouseEnter={() => handleCardMouseEnter(index)}
+              onMouseLeave={handleCardMouseLeave}
+            >
               <div className="activity-image-container">
                 <img
                   src={activity.image}
@@ -374,12 +378,12 @@ const CardActivities = () => {
                 )}
                 <div className="activity-actions">
                   <div className="action-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill={activity.id === 1 ? "#ef4444" : "none"} stroke="#1f2937" strokeWidth="2">
+                    <svg viewBox="0 0 24 24" fill={activity.id === 1 ? "#ef4444" : "none"} stroke="#1f2937" strokeWidth="2">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
                   </div>
                   <div className="action-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#1f2937" strokeWidth="2">
                       <circle cx="18" cy="5" r="3"/>
                       <circle cx="6" cy="12" r="3"/>
                       <circle cx="18" cy="19" r="3"/>
@@ -391,54 +395,49 @@ const CardActivities = () => {
               </div>
               
               <div className="activity-content">
-                <div className="activity-header">
-                  <div>
-                    <div className="activity-location">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                      </svg>
-                      <span>{activity.location}</span>
-                    </div>
+                <div className="activity-location-row">
+                  <div className="activity-location">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>{activity.location}</span>
                   </div>
                   <div className="activity-rating">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" strokeWidth="2">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" strokeWidth="2">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                     </svg>
                     <span>{activity.rating} ({activity.reviews})</span>
                   </div>
                 </div>
-                
+
                 <h3 className="activity-title">{activity.title}</h3>
-                
+
                 <div className="activity-details">
                   <div className="activity-detail-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
                       <circle cx="12" cy="12" r="10"/>
                       <polyline points="12 6 12 12 16 14"/>
                     </svg>
                     <span>{activity.duration}</span>
                   </div>
                   <div className="activity-detail-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                       <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
                     <span>{activity.type}</span>
                   </div>
                 </div>
-                
+
                 <div className="activity-footer">
-                  <div>
+                  <div className="activity-price-section">
                     <div className="activity-price">
-                      ${activity.price}
-                      <span className="activity-price-type">/{activity.priceType}</span>
+                      ${activity.price}<span className="activity-price-type">/{activity.priceType}</span>
                     </div>
                     {activity.freeCancellation && (
                       <div className="free-cancellation">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12"/>
                         </svg>
                         <span>Free cancellation</span>
@@ -446,7 +445,7 @@ const CardActivities = () => {
                     )}
                   </div>
                   {activity.provider && (
-                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    <div className="activity-provider">
                       {activity.provider}
                     </div>
                   )}

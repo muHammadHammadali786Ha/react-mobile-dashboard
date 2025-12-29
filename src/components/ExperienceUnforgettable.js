@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const ExperienceUnforgettable = () => {
   const scrollContainerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const currentIndexRef = useRef(0);
-  const scrollIntervalRef = useRef(null);
-  const startTimeoutRef = useRef(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
   const experiences = [
     {
@@ -38,74 +35,33 @@ const ExperienceUnforgettable = () => {
     }
   ];
 
-  // Auto-scroll functionality
-  useEffect(() => {
+  // Scroll to card when hovering on partially visible card
+  const handleCardMouseEnter = (index) => {
+    setHoveredCardIndex(index);
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing intervals and timeouts
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const cards = scrollContainer.querySelectorAll('.experience-card');
+    if (!cards[index]) return;
+
+    const card = cards[index];
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Check if card is partially visible (not fully in view)
+    const isPartiallyVisible = cardRect.right > containerRect.right || cardRect.left < containerRect.left;
+
+    if (isPartiallyVisible) {
+      const scrollLeft = card.offsetLeft - 16;
+      scrollContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
     }
-    if (startTimeoutRef.current) {
-      clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = null;
-    }
+  };
 
-    // Wait for DOM to be ready
-    const initTimeout = setTimeout(() => {
-      // Initialize scroll to first card
-      scrollContainer.scrollTo({ left: 0, behavior: 'auto' });
-      currentIndexRef.current = 0;
-
-      const scrollToNext = () => {
-        if (isPaused) return;
-        
-        const nextIndex = (currentIndexRef.current + 1) % experiences.length;
-        currentIndexRef.current = nextIndex;
-        
-        const cards = scrollContainer.querySelectorAll('.experience-card');
-        if (cards[nextIndex]) {
-          const card = cards[nextIndex];
-          const cardLeft = card.offsetLeft;
-          scrollContainer.scrollTo({
-            left: cardLeft,
-            behavior: 'smooth'
-          });
-        }
-      };
-
-      // Auto-scroll interval: 2 seconds
-      const scrollInterval = 2000; // 2000ms = 2 seconds
-      
-      // Start auto-scroll after initial delay
-      startTimeoutRef.current = setTimeout(() => {
-        if (!isPaused) {
-          scrollIntervalRef.current = setInterval(scrollToNext, scrollInterval);
-        }
-      }, scrollInterval);
-    }, 100);
-    
-    return () => {
-      clearTimeout(initTimeout);
-      if (startTimeoutRef.current) {
-        clearTimeout(startTimeoutRef.current);
-        startTimeoutRef.current = null;
-      }
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
-    };
-  }, [isPaused, experiences.length]);
-
-  // Pause on user interaction
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    setTimeout(() => setIsPaused(false), 2000);
+  const handleCardMouseLeave = () => {
+    setHoveredCardIndex(null);
   };
 
   return (
@@ -130,43 +86,40 @@ const ExperienceUnforgettable = () => {
           overflow-y: hidden;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x mandatory;
-          scroll-padding: 0;
+          scroll-padding: 0 1rem;
           width: 100%;
           max-width: 100%;
           position: relative;
+          gap: 0.6rem;
+          padding-bottom: 0.5rem;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
         .experience-scroll::-webkit-scrollbar {
           display: none;
         }
-        .experience-scroll {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
         .experience-card {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           flex-shrink: 0;
           background: white;
-          border-radius: 1rem;
+          border-radius: 0.75rem;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           position: relative;
-          width: 100%;
-          min-width: 100%;
-          max-width: 100%;
-          margin-right: 1rem;
+          width: 150px;
+          min-width: 150px;
+          max-width: 150px;
           box-sizing: border-box;
           cursor: pointer;
-          transition: transform 0.2s;
+          transition: transform 0.2s, box-shadow 0.2s;
         }
         .experience-card:hover {
-          transform: scale(1.02);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         .experience-image-container {
           position: relative;
           width: 100%;
-          height: 12.5rem;
+          height: 10rem;
           overflow: hidden;
         }
         .experience-image {
@@ -176,45 +129,48 @@ const ExperienceUnforgettable = () => {
         }
         .experience-overlay {
           position: absolute;
-          bottom: 0.75rem;
-          left: 0.75rem;
+          bottom: 0.5rem;
+          left: 0.5rem;
           background: rgba(31, 41, 55, 0.9);
           backdrop-filter: blur(6px);
-          border-radius: 0.5rem;
-          padding: 1rem 1.125rem;
+          border-radius: 0.375rem;
+          padding: 0.5rem 0.625rem;
           color: white;
-          max-width: calc(100% - 3rem);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-          min-width: 200px;
+          max-width: calc(100% - 1rem);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
         .experience-overlay-content {
           position: relative;
         }
         .experience-heart-icon {
           position: absolute;
-          top: -0.25rem;
-          right: -0.25rem;
-          width: 1.5rem;
-          height: 1.5rem;
+          top: -0.125rem;
+          right: -0.125rem;
+          width: 1.25rem;
+          height: 1.25rem;
           cursor: pointer;
           transition: transform 0.2s;
           background: rgba(0, 0, 0, 0.3);
           border-radius: 50%;
-          padding: 0.25rem;
+          padding: 0.125rem;
         }
         .experience-heart-icon:hover {
           transform: scale(1.2);
         }
         .experience-card-title {
-          font-size: 0.9375rem;
+          font-size: 0.7rem;
           font-weight: 600;
           color: white;
-          margin: 0 0 0.375rem 0;
-          line-height: 1.4;
+          margin: 0 0 0.25rem 0;
+          line-height: 1.3;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         .experience-price {
-          font-size: 1rem;
+          font-size: 0.75rem;
           font-weight: 700;
           color: white;
           margin: 0;
@@ -222,7 +178,7 @@ const ExperienceUnforgettable = () => {
         }
         @media (max-width: 480px) {
           .experience-section {
-            padding: 1.5rem 0 !important;
+            padding: 1rem 0 !important;
             margin-left: -16px !important;
             margin-right: -16px !important;
             width: calc(100% + 32px) !important;
@@ -233,9 +189,9 @@ const ExperienceUnforgettable = () => {
           .experience-title {
             padding-left: 1rem;
             padding-right: 1rem;
+            font-size: 1rem;
           }
           .experience-scroll {
-            scroll-snap-type: x mandatory;
             width: 100% !important;
             max-width: 100% !important;
             margin-left: 0 !important;
@@ -247,62 +203,64 @@ const ExperienceUnforgettable = () => {
             box-sizing: border-box;
             scroll-padding: 0 16px;
             -webkit-overflow-scrolling: touch;
-            gap: 16px;
+            gap: 8px !important;
           }
           .experience-card {
-            width: calc(100vw - 32px) !important;
-            min-width: calc(100vw - 32px) !important;
-            max-width: calc(100vw - 32px) !important;
+            width: 140px !important;
+            min-width: 140px !important;
+            max-width: 140px !important;
             margin: 0 !important;
-            border-radius: 1rem !important;
+            border-radius: 0.5rem !important;
             flex-shrink: 0 !important;
             box-sizing: border-box;
-            scroll-snap-align: start;
           }
           .experience-image-container {
-            height: 18.75rem;
+            height: 7rem !important;
             width: 100% !important;
           }
           .experience-image {
             width: 100% !important;
             height: 100% !important;
-            border-radius: 1rem 1rem 0 0 !important;
+            border-radius: 0.75rem 0.75rem 0 0 !important;
             object-fit: cover;
           }
           .experience-overlay {
-            bottom: 1rem;
-            left: 1rem;
-            padding: 1.125rem 1.25rem;
-            max-width: calc(100% - 2rem);
-            min-width: auto;
+            bottom: 0.375rem;
+            left: 0.375rem;
+            padding: 0.375rem 0.5rem;
+            max-width: calc(100% - 0.75rem);
             background: rgba(31, 41, 55, 0.95);
+            border-radius: 0.25rem;
           }
           .experience-card-title {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.6rem;
+            margin-bottom: 0.125rem;
+            -webkit-line-clamp: 2;
           }
           .experience-price {
-            font-size: 1.125rem;
+            font-size: 0.65rem;
           }
           .experience-heart-icon {
-            width: 1.75rem;
-            height: 1.75rem;
+            width: 1rem;
+            height: 1rem;
+            padding: 0.0625rem;
           }
         }
       `}</style>
       <section className="experience-section">
         <h2 className="experience-title">An Experience You'll Never Forget</h2>
-        
+
         <div
           ref={scrollContainerRef}
           className="experience-scroll"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
-          {experiences.map((experience) => (
-            <div key={experience.id} className="experience-card">
+          {experiences.map((experience, index) => (
+            <div
+              key={experience.id}
+              className="experience-card"
+              onMouseEnter={() => handleCardMouseEnter(index)}
+              onMouseLeave={handleCardMouseLeave}
+            >
               <div className="experience-image-container">
                 <img
                   src={experience.image}

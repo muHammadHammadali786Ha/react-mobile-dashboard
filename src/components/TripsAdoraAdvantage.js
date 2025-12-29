@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const TripsAdoraAdvantage = () => {
   const scrollContainerRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const currentIndexRef = useRef(0);
-  const scrollIntervalRef = useRef(null);
-  const startTimeoutRef = useRef(null);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState(null);
 
   const advantageCards = [
     {
@@ -14,9 +11,9 @@ const TripsAdoraAdvantage = () => {
       title: 'BECOME A RICH PANDA SUPPLIER',
       image: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
       stats: [
-        { label: 'Active Users', value: '10M+' },
-        { label: 'Avg.growth', value: '30%' },
-        { label: 'Countries', value: '150+' }
+        { label: 'Active Users', value: '10M+', icon: 'users' },
+        { label: 'Avg.growth', value: '30%', icon: 'growth' },
+        { label: 'Countries', value: '150+', icon: 'globe' }
       ],
       buttonText: 'Get Started Now'
     },
@@ -26,77 +23,43 @@ const TripsAdoraAdvantage = () => {
       value: '3.6M+',
       title: 'Satisfied travellers',
       image: 'https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80'
+    },
+    {
+      id: 3,
+      type: 'urgent',
+      value: '9',
+      title: 'Urgent travellers',
+      image: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80'
     }
   ];
 
-  // Auto-scroll functionality
-  useEffect(() => {
+  // Scroll to card when hovering on partially visible card
+  const handleCardMouseEnter = (index) => {
+    setHoveredCardIndex(index);
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    // Clear any existing intervals and timeouts
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const cards = scrollContainer.querySelectorAll('.advantage-card');
+    if (!cards[index]) return;
+
+    const card = cards[index];
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    // Check if card is partially visible (not fully in view)
+    const isPartiallyVisible = cardRect.right > containerRect.right || cardRect.left < containerRect.left;
+
+    if (isPartiallyVisible) {
+      const scrollLeft = card.offsetLeft - 16;
+      scrollContainer.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
     }
-    if (startTimeoutRef.current) {
-      clearTimeout(startTimeoutRef.current);
-      startTimeoutRef.current = null;
-    }
+  };
 
-    // Wait for DOM to be ready
-    const initTimeout = setTimeout(() => {
-      // Initialize scroll to first card
-      scrollContainer.scrollTo({ left: 0, behavior: 'auto' });
-      currentIndexRef.current = 0;
-
-      const scrollToNext = () => {
-        if (isPaused) return;
-        
-        const nextIndex = (currentIndexRef.current + 1) % advantageCards.length;
-        currentIndexRef.current = nextIndex;
-        
-        const cards = scrollContainer.querySelectorAll('.advantage-card');
-        if (cards[nextIndex]) {
-          const card = cards[nextIndex];
-          const cardLeft = card.offsetLeft;
-          scrollContainer.scrollTo({
-            left: cardLeft,
-            behavior: 'smooth'
-          });
-        }
-      };
-
-      // Auto-scroll interval: 2 seconds
-      const scrollInterval = 2000; // 2000ms = 2 seconds
-      
-      // Start auto-scroll after initial delay
-      startTimeoutRef.current = setTimeout(() => {
-        if (!isPaused) {
-          scrollIntervalRef.current = setInterval(scrollToNext, scrollInterval);
-        }
-      }, scrollInterval);
-    }, 100);
-    
-    return () => {
-      clearTimeout(initTimeout);
-      if (startTimeoutRef.current) {
-        clearTimeout(startTimeoutRef.current);
-        startTimeoutRef.current = null;
-      }
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
-      }
-    };
-  }, [isPaused, advantageCards.length]);
-
-  // Pause on user interaction
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
-  const handleTouchStart = () => setIsPaused(true);
-  const handleTouchEnd = () => {
-    setTimeout(() => setIsPaused(false), 2000); // Resume after 2 seconds
+  const handleCardMouseLeave = () => {
+    setHoveredCardIndex(null);
   };
 
   return (
@@ -122,42 +85,45 @@ const TripsAdoraAdvantage = () => {
           overflow-y: hidden;
           scroll-behavior: smooth;
           -webkit-overflow-scrolling: touch;
-          scroll-snap-type: x mandatory;
+          scroll-padding: 0 1rem;
           width: 100%;
           max-width: 100%;
           position: relative;
           padding: 0;
-          gap: 0;
+          gap: 0.6rem;
           -ms-overflow-style: none;
           scrollbar-width: none;
+          padding-bottom: 0.5rem;
         }
         .advantage-scroll::-webkit-scrollbar {
           display: none;
         }
         .advantage-card {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           flex-shrink: 0;
           background: white;
-          border-radius: 0;
-          overflow: hidden;
-          box-shadow: none;
-          position: relative;
-          width: 100%;
-          min-width: 100%;
-          max-width: 100%;
-          box-sizing: border-box;
-          cursor: pointer;
-        }
-        .advantage-card-inner {
-          margin: 0 1rem;
           border-radius: 0.75rem;
           overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          position: relative;
+          width: 150px;
+          min-width: 150px;
+          max-width: 150px;
+          box-sizing: border-box;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .advantage-card:hover {
+          transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .advantage-card-inner {
+          margin: 0;
+          border-radius: 0.75rem;
+          overflow: hidden;
         }
         .supplier-card {
           position: relative;
-          height: 220px;
+          height: 180px;
           overflow: hidden;
         }
         .supplier-bg-image {
@@ -174,65 +140,66 @@ const TripsAdoraAdvantage = () => {
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+          background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 1rem;
+          padding: 0.5rem;
         }
         .supplier-title {
-          font-size: 0.85rem;
+          font-size: 0.55rem;
           font-weight: 700;
           color: white;
           text-transform: uppercase;
-          letter-spacing: 0.03em;
+          letter-spacing: 0.02em;
           margin: 0;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+          line-height: 1.3;
         }
         .supplier-bottom {
           display: flex;
           flex-direction: column;
-          gap: 0.6rem;
+          gap: 0.35rem;
         }
         .supplier-stats {
           display: flex;
           flex-direction: row;
-          gap: 0.5rem;
+          gap: 0.25rem;
           justify-content: flex-start;
         }
         .supplier-stat-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 0.4rem 0.6rem;
+          padding: 0.2rem 0.3rem;
           background: rgba(255, 255, 255, 0.15);
           backdrop-filter: blur(4px);
-          border-radius: 0.4rem;
-          min-width: 60px;
+          border-radius: 0.25rem;
+          min-width: 38px;
         }
         .supplier-stat-icon {
-          width: 16px;
-          height: 16px;
-          margin-bottom: 0.2rem;
-        }
-        .supplier-stat-label {
-          font-size: 0.55rem;
-          color: rgba(255, 255, 255, 0.9);
+          width: 10px;
+          height: 10px;
           margin-bottom: 0.1rem;
         }
+        .supplier-stat-label {
+          font-size: 0.4rem;
+          color: rgba(255, 255, 255, 0.9);
+          margin-bottom: 0.05rem;
+        }
         .supplier-stat-value {
-          font-size: 0.75rem;
+          font-size: 0.5rem;
           font-weight: 700;
           color: white;
         }
         .supplier-button {
           width: 100%;
-          padding: 0.65rem 1rem;
+          padding: 0.35rem 0.5rem;
           background: #14b8a6;
           color: white;
           border: none;
-          border-radius: 0.5rem;
-          font-size: 0.8rem;
+          border-radius: 0.3rem;
+          font-size: 0.55rem;
           font-weight: 600;
           cursor: pointer;
           transition: background 0.2s;
@@ -242,7 +209,7 @@ const TripsAdoraAdvantage = () => {
         }
         .traveler-card {
           position: relative;
-          height: 220px;
+          height: 180px;
           background: transparent;
           overflow: hidden;
         }
@@ -259,29 +226,64 @@ const TripsAdoraAdvantage = () => {
         }
         .traveler-overlay {
           position: absolute;
-          bottom: 1rem;
-          right: 1rem;
+          bottom: 0.5rem;
+          right: 0.5rem;
           background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(8px);
-          border-radius: 0.5rem;
-          padding: 1rem 1.25rem;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-radius: 0.35rem;
+          padding: 0.4rem 0.5rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .traveler-value {
-          font-size: 1.75rem;
+          font-size: 1rem;
           font-weight: 700;
           color: #1e40af;
-          margin: 0 0 0.25rem 0;
+          margin: 0 0 0.15rem 0;
           line-height: 1;
         }
         .traveler-divider {
           width: 100%;
           height: 1px;
           background: #e5e7eb;
-          margin: 0.5rem 0;
+          margin: 0.25rem 0;
         }
         .traveler-title {
-          font-size: 0.85rem;
+          font-size: 0.55rem;
+          font-weight: 500;
+          color: #6b7280;
+          margin: 0;
+        }
+        .urgent-card {
+          position: relative;
+          height: 180px;
+          background: transparent;
+          overflow: hidden;
+        }
+        .urgent-overlay {
+          position: absolute;
+          bottom: 0.5rem;
+          right: 0.5rem;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(8px);
+          border-radius: 0.35rem;
+          padding: 0.4rem 0.5rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .urgent-value {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #dc2626;
+          margin: 0 0 0.15rem 0;
+          line-height: 1;
+        }
+        .urgent-divider {
+          width: 100%;
+          height: 1px;
+          background: #e5e7eb;
+          margin: 0.25rem 0;
+        }
+        .urgent-title {
+          font-size: 0.55rem;
           font-weight: 500;
           color: #6b7280;
           margin: 0;
@@ -303,83 +305,96 @@ const TripsAdoraAdvantage = () => {
             font-size: 1rem;
           }
           .advantage-scroll {
-            scroll-snap-type: x mandatory;
             width: 100% !important;
             max-width: 100% !important;
             padding: 0 16px !important;
-            gap: 16px !important;
+            gap: 8px !important;
             overflow-x: auto;
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
             scroll-padding: 0 16px;
           }
           .advantage-card {
-            width: calc(100vw - 32px) !important;
-            min-width: calc(100vw - 32px) !important;
-            max-width: calc(100vw - 32px) !important;
-            scroll-snap-align: start;
+            width: 140px !important;
+            min-width: 140px !important;
+            max-width: 140px !important;
             margin: 0 !important;
           }
           .advantage-card-inner {
             margin: 0;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
           }
           .supplier-card {
-            height: 200px;
+            height: 160px !important;
           }
           .supplier-overlay {
-            padding: 0.875rem;
+            padding: 0.4rem !important;
           }
           .supplier-title {
-            font-size: 0.75rem;
+            font-size: 0.5rem !important;
           }
           .supplier-stats {
-            gap: 0.4rem;
+            gap: 0.2rem !important;
           }
           .supplier-stat-item {
-            padding: 0.3rem 0.5rem;
-            min-width: 55px;
+            padding: 0.15rem 0.25rem !important;
+            min-width: 32px !important;
           }
           .supplier-stat-label {
-            font-size: 0.5rem;
+            font-size: 0.35rem !important;
           }
           .supplier-stat-value {
-            font-size: 0.7rem;
+            font-size: 0.45rem !important;
           }
           .supplier-button {
-            padding: 0.55rem 0.875rem;
-            font-size: 0.75rem;
+            padding: 0.3rem 0.4rem !important;
+            font-size: 0.5rem !important;
           }
           .traveler-card {
-            height: 200px;
+            height: 160px !important;
           }
           .traveler-overlay {
-            bottom: 0.75rem;
-            right: 0.75rem;
-            padding: 0.75rem 1rem;
+            bottom: 0.4rem !important;
+            right: 0.4rem !important;
+            padding: 0.3rem 0.4rem !important;
           }
           .traveler-value {
-            font-size: 1.5rem;
+            font-size: 0.85rem !important;
           }
           .traveler-title {
-            font-size: 0.75rem;
+            font-size: 0.5rem !important;
+          }
+          .urgent-card {
+            height: 160px !important;
+          }
+          .urgent-overlay {
+            bottom: 0.4rem !important;
+            right: 0.4rem !important;
+            padding: 0.3rem 0.4rem !important;
+          }
+          .urgent-value {
+            font-size: 0.85rem !important;
+          }
+          .urgent-title {
+            font-size: 0.5rem !important;
           }
         }
       `}</style>
       <section className="advantage-section">
         <h2 className="advantage-title">The Trips Adora's Advantage</h2>
-        
+
         <div
           ref={scrollContainerRef}
           className="advantage-scroll"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
-          {advantageCards.map((card) => (
-            <div key={card.id} className="advantage-card">
-              <div className={`advantage-card-inner ${card.type}-card`}>
+          {advantageCards.map((card, index) => (
+            <div
+              key={card.id}
+              className="advantage-card"
+              onMouseEnter={() => handleCardMouseEnter(index)}
+              onMouseLeave={handleCardMouseLeave}
+            >
+              <div className={`advantage-card-inner ${card.type === 'supplier' ? 'supplier' : 'traveler'}-card`}>
                 {card.type === 'supplier' ? (
                   <>
                     <img
@@ -408,7 +423,7 @@ const TripsAdoraAdvantage = () => {
                       </div>
                     </div>
                   </>
-                ) : (
+                ) : card.type === 'traveler' ? (
                   <>
                     <img
                       src={card.image}
@@ -420,6 +435,20 @@ const TripsAdoraAdvantage = () => {
                       <div className="traveler-value">{card.value}</div>
                       <div className="traveler-divider"></div>
                       <div className="traveler-title">{card.title}</div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      src={card.image}
+                      alt="Urgent Travel"
+                      className="traveler-image"
+                      loading="lazy"
+                    />
+                    <div className="urgent-overlay">
+                      <div className="urgent-value">{card.value}</div>
+                      <div className="urgent-divider"></div>
+                      <div className="urgent-title">{card.title}</div>
                     </div>
                   </>
                 )}

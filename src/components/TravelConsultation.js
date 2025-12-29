@@ -2,15 +2,15 @@ import React from 'react';
 
 const TravelConsultation = () => {
   const benefits = [
-    { id: 1, text: 'Personalized recommendations' },
-    { id: 2, text: 'Flexible scheduling' },
-    { id: 3, text: '24/7 support available' }
+    { id: 1, text: 'Personalized recommendations', icon: 'check' },
+    { id: 2, text: 'Flexible scheduling', icon: 'check' },
+    { id: 3, text: '24/7 support available', icon: 'check' }
   ];
 
   const contactOptions = [
-    { id: 1, text: 'Live Chat' },
-    { id: 2, text: 'Call Us' },
-    { id: 3, text: 'Schedule a Call' }
+    { id: 1, text: 'Live Chat', icon: 'chat' },
+    { id: 2, text: 'Call Us', icon: 'phone' },
+    { id: 3, text: 'Schedule a Call', icon: 'calendar' }
   ];
 
   return (
@@ -22,20 +22,20 @@ const TravelConsultation = () => {
           background: #f5f7fa;
         }
         .consultation-card {
-          background: linear-gradient(135deg, #f9b233 0%, #f5a623 100%);
+          background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 50%, #1e3a5f 100%);
           border-radius: 1rem;
           padding: 1.25rem;
-          box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+          box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
         }
         .consultation-title {
           font-size: 1.1rem;
           font-weight: 700;
-          color: #1a1a1a;
+          color: #ffffff;
           margin-bottom: 0.5rem;
         }
         .consultation-description {
           font-size: 0.8rem;
-          color: #333;
+          color: rgba(255, 255, 255, 0.85);
           line-height: 1.5;
           margin-bottom: 1rem;
         }
@@ -65,20 +65,34 @@ const TravelConsultation = () => {
         .consultation-icon {
           width: 16px;
           height: 16px;
-          color: #1a1a1a;
+          color: #ffffff;
           flex-shrink: 0;
+        }
+        .consultation-icon-circle {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          border: 1.5px solid rgba(255, 255, 255, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .consultation-icon-circle svg {
+          width: 10px;
+          height: 10px;
         }
         .consultation-text {
           font-size: 0.75rem;
-          color: #1a1a1a;
+          color: #ffffff;
           font-weight: 500;
           line-height: 1.3;
         }
         .consultation-button {
-          background: #fffbeb;
-          color: #92400e;
+          background: #ffffff;
+          color: #1e3a5f;
           border: none;
-          border-radius: 1.5rem;
+          border-radius: 0.5rem;
           padding: 0.6rem 1.25rem;
           font-size: 0.75rem;
           font-weight: 600;
@@ -86,10 +100,10 @@ const TravelConsultation = () => {
           transition: all 0.2s ease;
           margin-top: 0.75rem;
           white-space: nowrap;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .consultation-button:hover {
-          background: #fef3c7;
+          background: #f8fafc;
           transform: translateY(-1px);
         }
         .consultation-button:active {
@@ -115,15 +129,16 @@ const TravelConsultation = () => {
             margin-bottom: 1rem;
           }
           .consultation-content {
-            flex-direction: column;
+            flex-direction: row;
             gap: 1rem;
           }
           .consultation-left {
-            width: 100%;
+            width: auto;
+            flex: 1;
           }
           .consultation-right {
-            width: 100%;
-            align-items: flex-start;
+            width: auto;
+            align-items: flex-end;
           }
           .consultation-item {
             gap: 0.5rem;
@@ -133,13 +148,13 @@ const TravelConsultation = () => {
             height: 16px;
           }
           .consultation-text {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
           }
           .consultation-button {
-            width: 100%;
+            width: auto;
             text-align: center;
-            font-size: 0.85rem;
-            padding: 0.75rem 1.25rem;
+            font-size: 0.75rem;
+            padding: 0.6rem 1rem;
             margin-top: 0.75rem;
           }
         }
@@ -167,12 +182,13 @@ const TravelConsultation = () => {
             height: 14px;
           }
           .consultation-text {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
           }
           .consultation-button {
-            font-size: 0.75rem;
-            padding: 0.6rem 1rem;
+            font-size: 0.7rem;
+            padding: 0.5rem 0.875rem;
             margin-top: 0.5rem;
+            width: 100%;
           }
         }
       `}</style>
@@ -188,11 +204,11 @@ const TravelConsultation = () => {
             <div className="consultation-left">
               {benefits.map((benefit) => (
                 <div key={benefit.id} className="consultation-item">
-                  <svg className="consultation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    {benefit.id === 1 && <><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></>}
-                    {benefit.id === 2 && <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></>}
-                    {benefit.id === 3 && <><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></>}
-                  </svg>
+                  <div className="consultation-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
                   <span className="consultation-text">{benefit.text}</span>
                 </div>
               ))}
@@ -201,10 +217,10 @@ const TravelConsultation = () => {
             <div className="consultation-right">
               {contactOptions.map((option) => (
                 <div key={option.id} className="consultation-item">
-                  <svg className="consultation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    {option.id === 1 && <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></>}
-                    {option.id === 2 && <><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></>}
-                    {option.id === 3 && <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></>}
+                  <svg className="consultation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {option.icon === 'chat' && <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></>}
+                    {option.icon === 'phone' && <><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></>}
+                    {option.icon === 'calendar' && <><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></>}
                   </svg>
                   <span className="consultation-text">{option.text}</span>
                 </div>
