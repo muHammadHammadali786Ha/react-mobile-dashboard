@@ -286,16 +286,15 @@ const TripsAdoraAdvantage = () => {
           color: #6b7280;
           margin: 0;
         }
-        @media (max-width: 26.75rem) {
+        @media (max-width: 480px) {
           .advantage-section {
             padding: 1rem 0 !important;
-            margin-left: calc(-1rem - 16px) !important;
-            margin-right: calc(-1rem - 16px) !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
+            margin-left: -16px !important;
+            margin-right: -16px !important;
+            width: calc(100% + 32px) !important;
+            max-width: calc(100% + 32px) !important;
             position: relative;
-            left: 0;
-            right: 0;
+            box-sizing: border-box;
             overflow: hidden;
           }
           .advantage-title {
@@ -305,23 +304,25 @@ const TripsAdoraAdvantage = () => {
           }
           .advantage-scroll {
             scroll-snap-type: x mandatory;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            min-width: 100vw !important;
-            padding: 0 !important;
-            gap: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 16px !important;
+            gap: 16px !important;
             overflow-x: auto;
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
+            scroll-padding: 0 16px;
           }
           .advantage-card {
-            width: 100vw !important;
-            min-width: 100vw !important;
-            max-width: 100vw !important;
+            width: calc(100vw - 32px) !important;
+            min-width: calc(100vw - 32px) !important;
+            max-width: calc(100vw - 32px) !important;
             scroll-snap-align: start;
+            margin: 0 !important;
           }
           .advantage-card-inner {
-            margin: 0 1rem;
+            margin: 0;
+            border-radius: 1rem;
           }
           .supplier-card {
             height: 200px;

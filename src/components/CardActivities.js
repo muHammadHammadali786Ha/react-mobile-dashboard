@@ -300,16 +300,15 @@ const CardActivities = () => {
           color: #10b981;
           font-weight: 500;
         }
-        @media (max-width: 26.75rem) {
+        @media (max-width: 480px) {
           .activities-section {
             padding: 1.5rem 0 !important;
-            margin-left: calc(-1rem - 16px) !important;
-            margin-right: calc(-1rem - 16px) !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
+            margin-left: -16px !important;
+            margin-right: -16px !important;
+            width: calc(100% + 32px) !important;
+            max-width: calc(100% + 32px) !important;
             position: relative;
-            left: 0;
-            right: 0;
+            box-sizing: border-box;
           }
           .activities-title {
             padding-left: 1rem;
@@ -317,28 +316,28 @@ const CardActivities = () => {
           }
           .activities-scroll {
             scroll-snap-type: x mandatory;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            min-width: 100vw !important;
+            width: 100% !important;
+            max-width: 100% !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
+            padding: 0 16px !important;
             overflow-x: auto;
             overflow-y: hidden;
             position: relative;
             box-sizing: border-box;
-            scroll-padding: 0;
+            scroll-padding: 0 16px;
             -webkit-overflow-scrolling: touch;
+            gap: 16px;
           }
           .activity-card {
-            width: 100vw !important;
-            min-width: 100vw !important;
-            max-width: 100vw !important;
-            margin-right: 0 !important;
-            border-radius: 0 !important;
+            width: calc(100vw - 32px) !important;
+            min-width: calc(100vw - 32px) !important;
+            max-width: calc(100vw - 32px) !important;
+            margin: 0 !important;
+            border-radius: 1rem !important;
             flex-shrink: 0 !important;
             box-sizing: border-box;
+            scroll-snap-align: start;
           }
           .activity-image-container {
             height: 15rem;
@@ -346,7 +345,7 @@ const CardActivities = () => {
           }
           .activity-image {
             width: 100% !important;
-            border-radius: 0 !important;
+            border-radius: 1rem 1rem 0 0 !important;
           }
         }
       `}</style>

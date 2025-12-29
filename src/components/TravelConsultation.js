@@ -96,6 +96,54 @@ const TravelConsultation = () => {
           transform: translateY(0);
         }
 
+        @media (max-width: 480px) {
+          .consultation-section {
+            padding: 1rem;
+            box-sizing: border-box;
+          }
+          .consultation-card {
+            padding: 1.25rem;
+            box-sizing: border-box;
+            width: 100%;
+            overflow: hidden;
+          }
+          .consultation-title {
+            font-size: 1.1rem;
+          }
+          .consultation-description {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+          }
+          .consultation-content {
+            flex-direction: column;
+            gap: 1rem;
+          }
+          .consultation-left {
+            width: 100%;
+          }
+          .consultation-right {
+            width: 100%;
+            align-items: flex-start;
+          }
+          .consultation-item {
+            gap: 0.5rem;
+          }
+          .consultation-icon {
+            width: 16px;
+            height: 16px;
+          }
+          .consultation-text {
+            font-size: 0.8rem;
+          }
+          .consultation-button {
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 0.75rem 1.25rem;
+            margin-top: 0.75rem;
+          }
+        }
+
         @media (max-width: 380px) {
           .consultation-card {
             padding: 1rem;
@@ -108,7 +156,8 @@ const TravelConsultation = () => {
             margin-bottom: 0.875rem;
           }
           .consultation-content {
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
           }
           .consultation-item {
             gap: 0.375rem;
@@ -118,11 +167,11 @@ const TravelConsultation = () => {
             height: 14px;
           }
           .consultation-text {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
           }
           .consultation-button {
-            font-size: 0.7rem;
-            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            padding: 0.6rem 1rem;
             margin-top: 0.5rem;
           }
         }
