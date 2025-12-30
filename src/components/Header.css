@@ -1,24 +1,24 @@
 .hero-header {
   position: relative;
   width: 100%;
-  min-height: 500px;
+  min-height: 520px;
   overflow: visible;
   display: flex;
   flex-direction: column;
-  padding-top: 48px;
+  padding-top: 0;
   padding-bottom: 80px;
 }
 
-/* Clear Background Image - Travel Couple */
+/* Background Image - Travel Couple in Florence */
 .hero-background {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://images.unsplash.com/photo-1539635278303-d4002c07eae3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+  background-image: url('https://images.unsplash.com/photo-1530789253388-582c481c54b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
   background-size: cover;
-  background-position: center top;
+  background-position: center 30%;
   z-index: 0;
 }
 
@@ -29,7 +29,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   z-index: 1;
 }
 
@@ -40,21 +45,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  padding: 14px 16px;
+  background: transparent;
 }
 
 .nav-icon-button {
   background: transparent;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: white;
+  color: #374151;
   transition: opacity 0.2s ease;
   padding: 0;
 }
@@ -63,27 +67,34 @@
   opacity: 0.7;
 }
 
+.nav-icon-button svg {
+  stroke: #374151;
+}
+
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .panda-icon {
-  font-size: 24px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-text {
   font-size: 18px;
   font-weight: 700;
-  color: white;
+  color: #1f2937;
   letter-spacing: -0.5px;
 }
 
 .nav-icons {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 /* Top Search Bar */
@@ -93,17 +104,34 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 20px auto;
-  padding: 12px 20px;
+  margin: 16px auto;
+  padding: 6px 16px 6px 6px;
   background: white;
-  border-radius: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
-  width: calc(100% - 40px);
+  border-radius: 50px;
+  border: 1px solid #e5e7eb;
+  max-width: 320px;
+  width: calc(100% - 48px);
+}
+
+.search-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.search-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: white;
 }
 
 .top-search-text {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #9ca3af;
   font-weight: 400;
 }
@@ -112,34 +140,304 @@
 .hero-text-overlay {
   position: relative;
   z-index: 2;
-  padding: 32px 16px;
+  padding: 24px 20px;
   margin-top: auto;
-  margin-bottom: 40px;
+  margin-bottom: 50px;
 }
 
 .hero-text-line {
-  font-size: 48px;
-  font-weight: 900;
-  line-height: 1.1;
-  color: white;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  color: #1e3a5f;
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: -1px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: -2px;
+  font-style: italic;
 }
 
 .hero-text-voyage {
-  color: #1e3a8a;
-  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  color: #67b8c8;
+  text-shadow: none;
 }
 
-@media (max-width: 375px) {
+/* Responsive */
+@media (max-width: 400px) {
   .hero-text-line {
-    font-size: 40px;
+    font-size: 44px;
   }
-  
+
   .hero-header {
-    min-height: 450px;
+    min-height: 480px;
+  }
+
+  .top-search-bar {
+    padding: 12px 20px;
+    max-width: 280px;
+  }
+
+  .top-search-text {
+    font-size: 0.9rem;
   }
 }
 
+@media (max-width: 340px) {
+  .hero-text-line {
+    font-size: 38px;
+  }
+}
+
+/* ==================== SIDEBAR STYLES ==================== */
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Sidebar Menu - Mobile First */
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 320px;
+  height: 100%;
+  background: white;
+  z-index: 999;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-menu.active {
+  transform: translateX(0);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  padding: 24px 24px 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-logo-text {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.3px;
+}
+
+/* User & Close Row */
+.sidebar-user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px 24px;
+  flex-shrink: 0;
+}
+
+.sidebar-user-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-close-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-close-btn:active {
+  opacity: 0.6;
+}
+
+/* Sidebar Content */
+.sidebar-content {
+  flex: 1;
+  padding: 0 24px 24px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Sidebar Sections */
+.sidebar-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.sidebar-section:first-child {
+  padding-top: 0;
+}
+
+.sidebar-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.sidebar-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu-item {
+  margin: 0;
+}
+
+.sidebar-menu-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 15px;
+  transition: color 0.2s ease;
+}
+
+.sidebar-menu-link:active {
+  color: #1f2937;
+}
+
+.sidebar-menu-link svg {
+  flex-shrink: 0;
+  color: #d1d5db;
+}
+
+/* Sidebar Dropdowns */
+.sidebar-dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 0;
+  align-items: center;
+}
+
+.sidebar-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 160px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.sidebar-dropdown:active {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+/* Login Link */
+.sidebar-login-link {
+  display: block;
+  text-align: center;
+  color: #ef4444;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 20px 0;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-login-link:active {
+  opacity: 0.7;
+}
+
+/* Social Section */
+.sidebar-social {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.sidebar-social-label {
+  display: block;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.sidebar-social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #1f2937;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.social-icon:active {
+  transform: scale(0.95);
+}
+
+/* Sidebar Copyright */
+.sidebar-copyright {
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 20px 0 16px;
+}
+
+/* Mobile specific - full width on small screens */
+@media (max-width: 375px) {
+  .sidebar-menu {
+    max-width: 100%;
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 16px;
+  }
+
+  .sidebar-user-row {
+    padding: 0 20px 20px;
+  }
+
+  .sidebar-content {
+    padding: 0 20px 20px;
+  }
+}
