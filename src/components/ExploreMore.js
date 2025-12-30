@@ -58,8 +58,8 @@ const ExploreMore = () => {
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
         .explore-item-number {
-          background: #f59e0b;
-          color: #1e3a5f;
+          background: #F6C604;
+          color: #243D75;
           font-weight: 700;
           font-size: 0.65rem;
           width: 1.5rem;

@@ -131,13 +131,19 @@ const ExperienceUnforgettable = () => {
           position: absolute;
           bottom: 0.5rem;
           left: 0.5rem;
-          background: rgba(31, 41, 55, 0.9);
-          backdrop-filter: blur(6px);
-          border-radius: 0.375rem;
+          right: 0.5rem;
+          min-height: 3.5rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          border-radius: 0.5rem;
           padding: 0.5rem 0.625rem;
           color: white;
-          max-width: calc(100% - 1rem);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
         }
         .experience-overlay-content {
           position: relative;
@@ -227,10 +233,11 @@ const ExperienceUnforgettable = () => {
           .experience-overlay {
             bottom: 0.375rem;
             left: 0.375rem;
+            right: 0.375rem;
+            min-height: 3rem;
             padding: 0.375rem 0.5rem;
-            max-width: calc(100% - 0.75rem);
-            background: rgba(31, 41, 55, 0.95);
-            border-radius: 0.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
           }
           .experience-card-title {
             font-size: 0.6rem;

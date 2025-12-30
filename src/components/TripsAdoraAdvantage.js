@@ -226,32 +226,39 @@ const TripsAdoraAdvantage = () => {
         }
         .traveler-overlay {
           position: absolute;
-          bottom: 0.5rem;
-          right: 0.5rem;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(8px);
-          border-radius: 0.35rem;
-          padding: 0.4rem 0.5rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-radius: 0.75rem;
+          padding: 1rem 1.25rem;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          text-align: center;
+          min-width: 100px;
         }
         .traveler-value {
-          font-size: 1rem;
+          font-size: 1.5rem;
           font-weight: 700;
           color: #1e40af;
-          margin: 0 0 0.15rem 0;
+          margin: 0 0 0.5rem 0;
           line-height: 1;
         }
         .traveler-divider {
-          width: 100%;
-          height: 1px;
-          background: #e5e7eb;
-          margin: 0.25rem 0;
+          width: 50px;
+          height: 2px;
+          background: rgba(255, 255, 255, 0.8);
+          margin: 0 auto 0.5rem auto;
+          border-radius: 2px;
         }
         .traveler-title {
-          font-size: 0.55rem;
+          font-size: 0.75rem;
           font-weight: 500;
           color: #6b7280;
           margin: 0;
+          line-height: 1.4;
         }
         .urgent-card {
           position: relative;
@@ -261,32 +268,39 @@ const TripsAdoraAdvantage = () => {
         }
         .urgent-overlay {
           position: absolute;
-          bottom: 0.5rem;
-          right: 0.5rem;
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(8px);
-          border-radius: 0.35rem;
-          padding: 0.4rem 0.5rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(255, 255, 255, 0.25);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-radius: 0.75rem;
+          padding: 1rem 1.25rem;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          text-align: center;
+          min-width: 100px;
         }
         .urgent-value {
-          font-size: 1rem;
+          font-size: 1.5rem;
           font-weight: 700;
           color: #dc2626;
-          margin: 0 0 0.15rem 0;
+          margin: 0 0 0.5rem 0;
           line-height: 1;
         }
         .urgent-divider {
-          width: 100%;
-          height: 1px;
-          background: #e5e7eb;
-          margin: 0.25rem 0;
+          width: 50px;
+          height: 2px;
+          background: rgba(255, 255, 255, 0.8);
+          margin: 0 auto 0.5rem auto;
+          border-radius: 2px;
         }
         .urgent-title {
-          font-size: 0.55rem;
+          font-size: 0.75rem;
           font-weight: 500;
           color: #6b7280;
           margin: 0;
+          line-height: 1.4;
         }
         @media (max-width: 480px) {
           .advantage-section {
@@ -354,29 +368,47 @@ const TripsAdoraAdvantage = () => {
             height: 160px !important;
           }
           .traveler-overlay {
-            bottom: 0.4rem !important;
-            right: 0.4rem !important;
-            padding: 0.3rem 0.4rem !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            padding: 0.75rem 1rem !important;
+            min-width: 80px !important;
           }
           .traveler-value {
-            font-size: 0.85rem !important;
+            font-size: 1.25rem !important;
+            margin-bottom: 0.4rem !important;
+          }
+          .traveler-divider {
+            width: 40px !important;
+            height: 2px !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            margin-bottom: 0.4rem !important;
           }
           .traveler-title {
-            font-size: 0.5rem !important;
+            font-size: 0.65rem !important;
           }
           .urgent-card {
             height: 160px !important;
           }
           .urgent-overlay {
-            bottom: 0.4rem !important;
-            right: 0.4rem !important;
-            padding: 0.3rem 0.4rem !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            padding: 0.75rem 1rem !important;
+            min-width: 80px !important;
           }
           .urgent-value {
-            font-size: 0.85rem !important;
+            font-size: 1.25rem !important;
+            margin-bottom: 0.4rem !important;
+          }
+          .urgent-divider {
+            width: 40px !important;
+            height: 2px !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            margin-bottom: 0.4rem !important;
           }
           .urgent-title {
-            font-size: 0.5rem !important;
+            font-size: 0.65rem !important;
           }
         }
       `}</style>
