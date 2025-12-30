@@ -46,8 +46,9 @@ const ExploreMore = () => {
           align-items: center;
           background: #1e3a5f;
           color: white;
-          border-radius: 2rem;
-          padding: 0.5rem 0.75rem;
+          border-radius: 0.75rem;
+          padding: 0;
+          padding-right: 0.75rem;
           cursor: pointer;
           transition: transform 0.2s, box-shadow 0.2s;
           height: 2.25rem;
@@ -61,10 +62,11 @@ const ExploreMore = () => {
           background: #F6C604;
           color: #243D75;
           font-weight: 700;
-          font-size: 0.65rem;
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
+          font-size: 0.7rem;
+          height: 100%;
+          padding: 0 1rem;
+          min-width: 2rem;
+          border-radius: 0.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -204,17 +206,17 @@ const ExploreMore = () => {
             gap: 0.4rem;
           }
           .explore-item {
-            padding: 0.4rem 0.6rem;
+            padding: 0;
+            padding-right: 0.5rem;
             height: 2rem;
           }
           .explore-item-number {
-            width: 1.35rem;
-            height: 1.35rem;
             font-size: 0.6rem;
+            padding: 0 0.5rem;
             margin-right: 0.4rem;
           }
           .explore-item-text {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
           }
           .footer-select-wrapper {
             width: 100px;
